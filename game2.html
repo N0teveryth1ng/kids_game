@@ -1,0 +1,770 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>Phonics · Lowercase Letters Q–Z · LY3</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Comic Sans MS', 'Chalkboard SE', 'Arial Rounded MT Bold', cursive;
+      background: linear-gradient(135deg, #fce4ec 0%, #e8f5e9 50%, #e3f2fd 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+
+    /* ══════════════════════════════════════
+       INTRO SCREEN — logo only
+    ══════════════════════════════════════ */
+    #intro-screen {
+      position: fixed;
+      inset: 0;
+      background: linear-gradient(160deg, #4a148c, #7b1fa2, #ab47bc);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 5px solid #FFD700;
+      z-index: 200;
+      cursor: pointer;
+    }
+    #intro-logo {
+      width: min(55vw, 260px);
+      height: auto;
+      filter: drop-shadow(0 6px 18px rgba(0,0,0,0.45));
+      animation: logoBounce 2s ease-in-out infinite;
+      pointer-events: none;
+    }
+    @keyframes logoBounce {
+      0%,100% { transform: translateY(0); }
+      50%      { transform: translateY(-10px); }
+    }
+
+    /* ══════════════════════════════════════
+       GAME SCREEN
+    ══════════════════════════════════════ */
+    #game-screen {
+      display: none;
+      flex-direction: column;
+      width: 100%;
+      max-width: 900px;
+      min-height: 100vh;
+      padding: 14px 14px 10px;
+    }
+
+    /* Header */
+    .hdr {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: white;
+      border-radius: 18px;
+      padding: 10px 18px;
+      margin-bottom: 12px;
+      box-shadow: 0 4px 14px rgba(0,0,0,0.1);
+    }
+    .hdr-score {
+      font-size: 1.2em;
+      font-weight: bold;
+      color: #4CAF50;
+      min-width: 80px;
+    }
+    .hdr-title {
+      font-size: clamp(0.75em, 2.5vw, 1em);
+      color: #6a0dad;
+      font-weight: bold;
+      text-align: center;
+    }
+    .hdr-right { display: flex; align-items: center; gap: 10px; }
+    .mute-btn {
+      width: 38px; height: 38px;
+      border: 2px solid #ddd;
+      border-radius: 50%;
+      background: white;
+      font-size: 1.1em;
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      transition: border-color 0.2s;
+    }
+    .mute-btn:hover { border-color: #aaa; }
+    .hdr-restart-btn {
+      width: 38px; height: 38px;
+      border: 2px solid #ddd;
+      border-radius: 50%;
+      background: white;
+      font-size: 1em;
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      transition: border-color 0.2s;
+    }
+    .hdr-restart-btn:hover { border-color: #aaa; }
+
+    /* Progress bar */
+    .progress-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+    .progress-label { font-size: 0.9em; color: #777; white-space: nowrap; }
+    .progress-bar-wrap {
+      flex: 1;
+      height: 10px;
+      background: #e0e0e0;
+      border-radius: 5px;
+      overflow: hidden;
+    }
+    .progress-bar-fill {
+      height: 100%;
+      border-radius: 5px;
+      background: linear-gradient(90deg, #7b1fa2, #ab47bc);
+      transition: width 0.5s ease;
+    }
+
+    /* Instruction */
+    .instruction {
+      text-align: center;
+      font-size: clamp(0.95em, 3vw, 1.15em);
+      color: #333;
+      font-weight: bold;
+      margin-bottom: 12px;
+      min-height: 1.6em;
+      padding: 0 10px;
+    }
+
+    /* Question card */
+    .q-card {
+      background: white;
+      border-radius: 24px;
+      padding: 24px 20px 20px;
+      box-shadow: 0 6px 24px rgba(0,0,0,0.1);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 18px;
+      flex: 1;
+      min-height: 260px;
+      justify-content: center;
+    }
+
+    /* Letter display */
+    .q-letter-wrap {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+    }
+    .q-find-label {
+      font-size: 0.85em;
+      color: #999;
+      font-weight: bold;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+    }
+    #q-letter {
+      font-size: clamp(4em, 15vw, 6em);
+      font-weight: bold;
+      color: #6a0dad;
+      text-shadow: 2px 3px 0 rgba(106,13,173,0.2);
+      line-height: 1;
+      display: inline-block;
+    }
+    #q-phoneme {
+      font-size: 1.4em;
+      font-weight: bold;
+      color: #555;
+    }
+
+    /* Hear sound button */
+    .hear-btn {
+      background: linear-gradient(135deg, #7b1fa2, #ab47bc);
+      color: white;
+      border: none;
+      padding: 10px 26px;
+      border-radius: 40px;
+      font-size: 1em;
+      font-family: inherit;
+      font-weight: bold;
+      cursor: pointer;
+      box-shadow: 0 5px 0 rgba(74,20,140,0.45), 0 3px 14px rgba(123,31,162,0.35);
+      transition: transform 0.1s, box-shadow 0.1s;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .hear-btn:hover  { transform: translateY(-2px); box-shadow: 0 7px 0 rgba(74,20,140,0.45), 0 5px 18px rgba(123,31,162,0.4); }
+    .hear-btn:active { transform: translateY(2px);  box-shadow: 0 2px 0 rgba(74,20,140,0.4); }
+
+    /* Tile grid — 5 columns, 2 rows for 10 letters */
+    #tiles-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 10px;
+      width: 100%;
+      max-width: 540px;
+    }
+    @media (max-width: 480px) {
+      #tiles-grid { grid-template-columns: repeat(5, 1fr); gap: 7px; }
+    }
+
+    /* Individual tile */
+    .letter-tile {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 16px;
+      height: 68px;
+      font-size: 1.9em;
+      font-weight: bold;
+      font-family: inherit;
+      cursor: pointer;
+      border: none;
+      border-bottom: 5px solid rgba(0,0,0,0.18);
+      box-shadow: 0 6px 0 rgba(0,0,0,0.12), 0 3px 14px rgba(0,0,0,0.08);
+      transition: transform 0.12s cubic-bezier(0.175, 0.885, 0.32, 1.275),
+                  box-shadow 0.12s ease,
+                  border-bottom-width 0.08s ease;
+      animation: tileIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) both;
+      -webkit-tap-highlight-color: transparent;
+    }
+    @media (max-width: 420px) {
+      .letter-tile { height: 52px; font-size: 1.5em; border-radius: 12px; }
+    }
+    .letter-tile:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 10px 0 rgba(0,0,0,0.1), 0 6px 20px rgba(0,0,0,0.12);
+    }
+    .letter-tile:active {
+      transform: translateY(3px) scale(0.95);
+      box-shadow: 0 2px 0 rgba(0,0,0,0.12);
+      border-bottom-width: 2px;
+    }
+    .letter-tile.disabled { pointer-events: none; }
+
+    .letter-tile.state-correct {
+      background: #E8F5E9 !important;
+      color: #2e7d32 !important;
+      border-bottom-color: #388e3c !important;
+      box-shadow: 0 6px 0 rgba(56,142,60,0.45), 0 0 0 4px rgba(76,175,80,0.25) !important;
+    }
+    .letter-tile.state-wrong {
+      background: #FFEBEE !important;
+      color: #c62828 !important;
+      border-bottom-color: #c62828 !important;
+      animation: shake 0.4s ease-in-out !important;
+    }
+    .letter-tile.state-hint {
+      animation: hintPulse 0.7s ease-in-out infinite !important;
+    }
+
+    @keyframes tileIn {
+      0%   { transform: scale(0) rotate(-8deg); opacity: 0; }
+      60%  { transform: scale(1.12) rotate(2deg); opacity: 1; }
+      80%  { transform: scale(0.97) rotate(-1deg); }
+      100% { transform: scale(1) rotate(0); opacity: 1; }
+    }
+    @keyframes shake {
+      0%,100% { transform: translateX(0); }
+      20%     { transform: translateX(-8px); }
+      40%     { transform: translateX(8px); }
+      60%     { transform: translateX(-6px); }
+      80%     { transform: translateX(6px); }
+    }
+    @keyframes hintPulse {
+      0%,100% { box-shadow: 0 0 0 4px rgba(255,215,0,0.6), 0 0 28px 8px rgba(255,215,0,0.5); border-color: #FFD700; }
+      50%     { box-shadow: 0 0 0 10px rgba(255,215,0,0.25), 0 0 50px 18px rgba(255,215,0,0.75); border-color: #FFD700; }
+    }
+    @keyframes letterBounceIn {
+      0%   { transform: scale(0) rotate(-12deg); opacity: 0; }
+      60%  { transform: scale(1.2) rotate(4deg); opacity: 1; }
+      80%  { transform: scale(0.96) rotate(-1deg); }
+      100% { transform: scale(1) rotate(0); opacity: 1; }
+    }
+    .letter-entrance { animation: letterBounceIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
+
+    /* Bottom row */
+    .bottom-row {
+      display: flex;
+      justify-content: center;
+      margin-top: 14px;
+    }
+    .btn-restart {
+      background: linear-gradient(135deg, #FF9800, #F57C00);
+      color: white;
+      border: none;
+      padding: 12px 32px;
+      border-radius: 40px;
+      font-size: 1em;
+      font-family: inherit;
+      font-weight: bold;
+      cursor: pointer;
+      box-shadow: 0 5px 14px rgba(255,152,0,0.4);
+      transition: transform 0.1s, box-shadow 0.1s;
+    }
+    .btn-restart:hover  { transform: translateY(-2px); }
+    .btn-restart:active { transform: translateY(1px); box-shadow: 0 2px 6px rgba(255,152,0,0.3); }
+
+    /* ══════════════════════════════════════
+       TOAST
+    ══════════════════════════════════════ */
+    #toast {
+      position: fixed;
+      top: 20%;
+      left: 50%;
+      transform: translateX(-50%) scale(0.7);
+      padding: 14px 30px;
+      border-radius: 50px;
+      font-size: 1.5em;
+      font-weight: bold;
+      color: white;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.2s, transform 0.2s;
+      z-index: 500;
+      white-space: nowrap;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+      font-family: 'Comic Sans MS', 'Chalkboard SE', cursive;
+    }
+    #toast.show { opacity: 1; transform: translateX(-50%) scale(1); }
+
+    /* ══════════════════════════════════════
+       CSS CONFETTI
+    ══════════════════════════════════════ */
+    .confetti {
+      position: fixed;
+      pointer-events: none;
+      z-index: 9998;
+      border-radius: 2px;
+    }
+
+    /* ══════════════════════════════════════
+       END SCREEN
+    ══════════════════════════════════════ */
+    #end-screen {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: linear-gradient(160deg, #4a148c, #7b1fa2, #ab47bc);
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+      z-index: 200;
+      text-align: center;
+      padding: 30px;
+    }
+    .end-trophy { font-size: 4.5em; animation: trophySpin 1.5s ease-out; }
+    @keyframes trophySpin {
+      from { transform: rotate(-20deg) scale(0); }
+      60%  { transform: rotate(10deg) scale(1.1); }
+      to   { transform: rotate(0deg) scale(1); }
+    }
+    .end-title  { color: #FFD700; font-size: clamp(1.5em, 5vw, 2.2em); font-weight: bold; text-shadow: 0 3px 10px rgba(0,0,0,0.3); }
+    .end-sub    { color: rgba(255,255,255,0.9); font-size: 1.1em; }
+    .end-score-box {
+      background: rgba(255,255,255,0.15);
+      border: 2px solid rgba(255,255,255,0.35);
+      border-radius: 20px;
+      padding: 16px 40px;
+      color: white;
+      font-size: 1.8em;
+      font-weight: bold;
+    }
+    .end-stars { font-size: 2.2em; letter-spacing: 4px; }
+    .btn-play-again {
+      background: #FFD700;
+      color: #333;
+      border: none;
+      padding: 15px 45px;
+      border-radius: 40px;
+      font-size: 1.2em;
+      font-family: inherit;
+      font-weight: bold;
+      cursor: pointer;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.2);
+      transition: transform 0.1s;
+      margin-top: 8px;
+    }
+    .btn-play-again:hover  { transform: scale(1.05); }
+    .btn-play-again:active { transform: scale(0.97); }
+  </style>
+</head>
+<body>
+
+<!-- ── TOAST ── -->
+<div id="toast"></div>
+
+<!-- ══════════════════════════════════════
+     INTRO SCREEN — logo only, tap to start
+══════════════════════════════════════ -->
+<div id="intro-screen" onclick="startGame()">
+  <img id="intro-logo" src="Assets/innovinelogo.png" alt="Innovine"
+       onerror="this.style.display='none'; document.getElementById('intro-logo-fallback').style.display='flex';">
+  <div id="intro-logo-fallback" style="display:none; flex-direction:column; align-items:center; gap:10px; pointer-events:none;">
+    <div style="font-size:clamp(2.5em,10vw,5em); font-weight:bold; color:#FFD700;
+                text-shadow:0 4px 16px rgba(0,0,0,0.4); letter-spacing:2px; animation:logoBounce 2s ease-in-out infinite;">
+      🌿 Innovine
+    </div>
+    <div style="color:rgba(255,255,255,0.7); font-size:1em; letter-spacing:3px;">EDUCATIONAL GAMES</div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     GAME SCREEN
+══════════════════════════════════════ -->
+<div id="game-screen">
+
+  <!-- Header -->
+  <div class="hdr">
+    <div class="hdr-score">⭐ <span id="score-val">0</span> / 10</div>
+    <div class="hdr-title">Phonics · Letters Q–Z</div>
+    <div class="hdr-right">
+      <button class="mute-btn" id="mute-btn" onclick="toggleMute()" title="Mute/Unmute">🔊</button>
+      <button class="hdr-restart-btn" onclick="restartGame()" title="Restart">🔄</button>
+    </div>
+  </div>
+
+  <!-- Progress bar -->
+  <div class="progress-row">
+    <span class="progress-label">Q <span id="q-num">1</span> / 10</span>
+    <div class="progress-bar-wrap">
+      <div class="progress-bar-fill" id="prog-bar" style="width:0%"></div>
+    </div>
+  </div>
+
+  <!-- Instruction -->
+  <div class="instruction" id="instruction-txt">Find the sound…</div>
+
+  <!-- Question card -->
+  <div class="q-card">
+
+    <div class="q-letter-wrap">
+      <div class="q-find-label">Find the sound</div>
+      <div id="q-letter">q</div>
+      <div id="q-phoneme">/kw/</div>
+    </div>
+
+    <button class="hear-btn" onclick="playCurrentLetterSound()">
+      🔊 &nbsp;Hear the Sound
+    </button>
+
+    <div id="tiles-grid"></div>
+
+  </div>
+
+  <!-- Bottom -->
+  <div class="bottom-row">
+    <button class="btn-restart" onclick="restartGame()">🔄 &nbsp;Restart</button>
+  </div>
+
+</div>
+
+<!-- ══════════════════════════════════════
+     END SCREEN
+══════════════════════════════════════ -->
+<div id="end-screen">
+  <div class="end-trophy">🏆</div>
+  <div class="end-title">You have done a great job!</div>
+  <div class="end-sub">You completed all 10 questions!</div>
+  <div class="end-score-box">Score: &nbsp;<span id="final-score">0</span> / 10</div>
+  <div class="end-stars" id="end-stars"></div>
+  <button class="btn-play-again" onclick="restartGame()">▶ &nbsp;Play Again</button>
+</div>
+
+<script>
+/* ════════════════════════════════════════
+   DATA — LY3 · Letters Q–T + U–Z
+════════════════════════════════════════ */
+const LETTERS = ['q','r','s','t','u','v','w','x','y','z'];
+
+const LETTER_DATA = {
+  q: { phoneme:'/kw/', speech:'The letter q. kwuh — like queen!',   instruction:'Find the letter that makes the sound… kwuh' },
+  r: { phoneme:'/r/',  speech:'The letter r. ruh — like rabbit!',   instruction:'Find the letter that makes the sound… ruh'  },
+  s: { phoneme:'/s/',  speech:'The letter s. sss — like snake!',    instruction:'Find the letter that makes the sound… sss'  },
+  t: { phoneme:'/t/',  speech:'The letter t. tuh — like tiger!',    instruction:'Find the letter that makes the sound… tuh'  },
+  u: { phoneme:'/ʌ/',  speech:'The letter u. uh — like umbrella!',  instruction:'Find the letter that makes the sound… uh'   },
+  v: { phoneme:'/v/',  speech:'The letter v. vvv — like violin!',   instruction:'Find the letter that makes the sound… vvv'  },
+  w: { phoneme:'/w/',  speech:'The letter w. wuh — like wolf!',     instruction:'Find the letter that makes the sound… wuh'  },
+  x: { phoneme:'/ks/', speech:'The letter x. ks — like fox!',       instruction:'Find the letter that makes the sound… ks'   },
+  y: { phoneme:'/j/',  speech:'The letter y. yuh — like yak!',      instruction:'Find the letter that makes the sound… yuh'  },
+  z: { phoneme:'/z/',  speech:'The letter z. zzz — like zebra!',    instruction:'Find the letter that makes the sound… zzz'  },
+};
+
+const TILE_PALETTE = [
+  { bg:'#f3e5f5', fg:'#6a0dad', borderShadow:'rgba(106,13,173,0.3)'  }, // q
+  { bg:'#e3f2fd', fg:'#1565c0', borderShadow:'rgba(21,101,192,0.3)'  }, // r
+  { bg:'#e8f5e9', fg:'#2e7d32', borderShadow:'rgba(46,125,50,0.3)'   }, // s
+  { bg:'#fff8e1', fg:'#e65100', borderShadow:'rgba(230,81,0,0.3)'    }, // t
+  { bg:'#fce4ec', fg:'#c62828', borderShadow:'rgba(198,40,40,0.3)'   }, // u
+  { bg:'#e0f7fa', fg:'#006064', borderShadow:'rgba(0,96,100,0.3)'    }, // v
+  { bg:'#f9fbe7', fg:'#558b2f', borderShadow:'rgba(85,139,47,0.3)'   }, // w
+  { bg:'#fbe9e7', fg:'#bf360c', borderShadow:'rgba(191,54,12,0.3)'   }, // x
+  { bg:'#ede7f6', fg:'#4527a0', borderShadow:'rgba(69,39,160,0.3)'   }, // y
+  { bg:'#e8eaf6', fg:'#1a237e', borderShadow:'rgba(26,35,126,0.3)'   }, // z
+];
+
+/* ════════════════════════════════════════
+   STATE
+════════════════════════════════════════ */
+let curQ     = 0;
+let score    = 0;
+let attempts = 0;
+let answered = false;
+let muted    = false;
+let timerTick = null;
+
+/* ════════════════════════════════════════
+   AUDIO
+════════════════════════════════════════ */
+const sndCorrect = new Audio('Assets/correct.mp3');
+const sndWrong   = new Audio('Assets/wrong.mp3');
+const sndClaps   = new Audio('Assets/claps.mp3');
+
+function playAudio(snd) {
+  if (muted) return;
+  snd.currentTime = 0;
+  snd.play().catch(() => {});
+}
+
+function speak(text, rate=0.82, pitch=1.2) {
+  if (muted) { console.log(`[AUDIO MUTED: "${text}"]`); return; }
+  if (!window.speechSynthesis) return;
+  window.speechSynthesis.cancel();
+  const u = new SpeechSynthesisUtterance(text);
+  u.rate = rate; u.pitch = pitch; u.volume = 1;
+  window.speechSynthesis.speak(u);
+}
+
+function playLetterSound(letter) {
+  speak(LETTER_DATA[letter].speech, 0.78, 1.3);
+}
+function playCurrentLetterSound() {
+  if (curQ < LETTERS.length) playLetterSound(LETTERS[curQ]);
+}
+
+/* ════════════════════════════════════════
+   START / LOAD
+════════════════════════════════════════ */
+function startGame() {
+  document.getElementById('intro-screen').style.display = 'none';
+  document.getElementById('game-screen').style.display  = 'flex';
+  curQ = 0; score = 0;
+  speak('Welcome to Phonics! Find the letters q through z!', 0.8, 1.3);
+  loadQuestion();
+}
+
+function loadQuestion() {
+  if (curQ >= LETTERS.length) { showEnd(); return; }
+
+  answered = false;
+  attempts = 0;
+
+  const letter = LETTERS[curQ];
+  const data   = LETTER_DATA[letter];
+
+  document.getElementById('q-num').textContent     = curQ + 1;
+  document.getElementById('score-val').textContent = score;
+  document.getElementById('prog-bar').style.width  = (curQ / LETTERS.length * 100) + '%';
+  document.getElementById('instruction-txt').textContent = data.instruction;
+  document.getElementById('q-phoneme').textContent = data.phoneme;
+
+  const qLetter = document.getElementById('q-letter');
+  qLetter.textContent = letter;
+  qLetter.classList.remove('letter-entrance');
+  void qLetter.offsetWidth;
+  qLetter.classList.add('letter-entrance');
+
+  renderTiles();
+  setTimeout(() => playLetterSound(letter), 500);
+}
+
+/* ════════════════════════════════════════
+   TILES
+════════════════════════════════════════ */
+function renderTiles() {
+  const grid = document.getElementById('tiles-grid');
+  grid.innerHTML = LETTERS.map((l, i) => {
+    const p = TILE_PALETTE[i];
+    return `<button
+      id="tile-${l}"
+      class="letter-tile"
+      style="background:${p.bg};color:${p.fg};
+             border-bottom-color:${p.borderShadow};
+             box-shadow:0 6px 0 ${p.borderShadow}, 0 3px 12px rgba(0,0,0,0.08);
+             animation-delay:${i * 0.05}s;"
+      onclick="handleTile('${l}')"
+    >${l}</button>`;
+  }).join('');
+}
+
+/* ════════════════════════════════════════
+   ANSWER LOGIC
+════════════════════════════════════════ */
+function handleTile(letter) {
+  if (answered) return;
+  const correct = LETTERS[curQ];
+  if (letter === correct) registerCorrect(letter);
+  else registerWrong(letter);
+}
+
+function registerCorrect(letter) {
+  answered = true;
+  score++;
+  document.getElementById('score-val').textContent = score;
+
+  setTileState(letter, 'correct');
+  dimAllExcept(letter);
+
+  playAudio(sndCorrect);
+  showToast('⭐ Correct!', '#4CAF50');
+  spawnConfetti();
+
+  setTimeout(() => { curQ++; loadQuestion(); }, 1900);
+}
+
+function registerWrong(letter) {
+  if (answered) return;
+
+  if (attempts < 1) {
+    attempts = 1;
+    setTileState(letter, 'wrong');
+    setTimeout(() => resetTileState(letter), 500);
+
+    playAudio(sndWrong);
+    showToast('❌ Try again!', '#f44336');
+
+    setTimeout(() => {
+      const correct = LETTERS[curQ];
+      document.getElementById(`tile-${correct}`).classList.add('state-hint');
+      speak('Here is a hint! Look for the glowing letter!', 0.8, 1.2);
+    }, 420);
+
+  } else {
+    answered = true;
+    setTileState(letter, 'wrong');
+    setTimeout(() => resetTileState(letter), 500);
+
+    playAudio(sndWrong);
+    const correct = LETTERS[curQ];
+
+    setTimeout(() => {
+      showToast('💡 The answer was: ' + correct.toUpperCase(), '#FF9800');
+      document.getElementById(`tile-${correct}`).classList.remove('state-hint');
+      setTileState(correct, 'correct');
+      dimAllExcept(correct);
+      speak('The correct letter was ' + correct, 0.8, 1.1);
+      setTimeout(() => { curQ++; loadQuestion(); }, 2500);
+    }, 600);
+  }
+}
+
+function setTileState(letter, state) {
+  const t = document.getElementById(`tile-${letter}`);
+  if (!t) return;
+  t.classList.remove('state-correct','state-wrong','state-hint');
+  if (state) t.classList.add('state-' + state);
+  if (state === 'correct') t.classList.add('disabled');
+}
+
+function resetTileState(letter) {
+  const t = document.getElementById(`tile-${letter}`);
+  if (t) t.classList.remove('state-wrong');
+}
+
+function dimAllExcept(keepLetter) {
+  LETTERS.forEach(l => {
+    const t = document.getElementById(`tile-${l}`);
+    if (!t || l === keepLetter) return;
+    t.classList.add('disabled');
+    t.style.opacity = '0.35';
+  });
+}
+
+/* ════════════════════════════════════════
+   TOAST
+════════════════════════════════════════ */
+let toastTimer = null;
+function showToast(msg, bg) {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.style.background = bg;
+  el.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => el.classList.remove('show'), 1400);
+}
+
+/* ════════════════════════════════════════
+   CSS CONFETTI
+════════════════════════════════════════ */
+const CONF_COLORS = ['#FFD700','#FF6B6B','#4CAF50','#2196F3','#FF9800','#AB47BC','#26C6DA'];
+function spawnConfetti() {
+  for (let i = 0; i < 70; i++) {
+    setTimeout(() => {
+      const el = document.createElement('div');
+      el.className = 'confetti';
+      const size = 6 + Math.random() * 9;
+      el.style.cssText = `
+        left:${Math.random() * 100}vw; top:-12px;
+        width:${size}px; height:${size}px;
+        background:${CONF_COLORS[Math.floor(Math.random() * CONF_COLORS.length)]};
+        border-radius:${Math.random() > 0.4 ? '50%' : '2px'};
+        animation: cfFall ${1.4 + Math.random() * 1.8}s linear forwards;
+        opacity:1;
+      `;
+      document.body.appendChild(el);
+      setTimeout(() => el.remove(), 3500);
+    }, i * 22);
+  }
+}
+if (!document.querySelector('#cf-style')) {
+  const s = document.createElement('style');
+  s.id = 'cf-style';
+  s.textContent = `@keyframes cfFall {
+    0%   { transform: translateY(0) rotate(0deg);      opacity: 1; }
+    100% { transform: translateY(105vh) rotate(540deg); opacity: 0; }
+  }`;
+  document.head.appendChild(s);
+}
+
+/* ════════════════════════════════════════
+   MUTE
+════════════════════════════════════════ */
+function toggleMute() {
+  muted = !muted;
+  document.getElementById('mute-btn').textContent = muted ? '🔇' : '🔊';
+  if (muted && window.speechSynthesis) window.speechSynthesis.cancel();
+}
+
+/* ════════════════════════════════════════
+   END SCREEN
+════════════════════════════════════════ */
+function showEnd() {
+  document.getElementById('game-screen').style.display = 'none';
+  const es = document.getElementById('end-screen');
+  es.style.display = 'flex';
+  document.getElementById('final-score').textContent = score;
+  const stars = score >= 9 ? '⭐⭐⭐' : score >= 6 ? '⭐⭐' : '⭐';
+  document.getElementById('end-stars').textContent = stars;
+  playAudio(sndClaps);
+  speak(`You scored ${score} out of 10. You have done a great job!`, 0.85, 1.2);
+  spawnConfetti();
+  setTimeout(spawnConfetti, 800);
+}
+
+/* ════════════════════════════════════════
+   RESTART
+════════════════════════════════════════ */
+function restartGame() {
+  if (window.speechSynthesis) window.speechSynthesis.cancel();
+  document.getElementById('end-screen').style.display  = 'none';
+  document.getElementById('game-screen').style.display = 'flex';
+  curQ = 0; score = 0; muted = false;
+  document.getElementById('mute-btn').textContent = '🔊';
+  loadQuestion();
+}
+</script>
+</body>
+</html>
