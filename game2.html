@@ -614,7 +614,9 @@ function registerCorrect(letter) {
   setTileState(letter, 'correct');
   dimAllExcept(letter);
 
-  playAudio(sndCorrect);
+  const isLast = (curQ + 1 >= LETTERS.length);
+  if (isLast) playAudio(sndClaps);
+  else playAudio(sndCorrect);
   showToast('⭐ Correct!', '#4CAF50');
   spawnConfetti();
 
@@ -743,7 +745,6 @@ function showEnd() {
   document.getElementById('final-score').textContent = score;
   const stars = score >= 9 ? '⭐⭐⭐' : score >= 6 ? '⭐⭐' : '⭐';
   document.getElementById('end-stars').textContent = stars;
-  playAudio(sndClaps);
   spawnConfetti();
   setTimeout(spawnConfetti, 800);
 }
