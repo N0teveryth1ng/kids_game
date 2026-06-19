@@ -279,6 +279,12 @@
     }
     .letter-entrance { animation: letterBounceIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
 
+    #q-emoji {
+      font-size: clamp(3em, 12vw, 5em);
+      line-height: 1;
+      animation: letterBounceIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+    }
+
     .btn-restart {
       position: fixed; bottom: 16px; left: 50%; transform: translateX(-50%);
       background: linear-gradient(135deg, #FF9800, #F57C00);
@@ -434,6 +440,7 @@
       <div class="q-find-label">Find the sound</div>
       <div id="q-letter">f</div>
     </div>
+    <div id="q-emoji">🐟</div>
 
     <!-- Hear sound button -->
     <button class="hear-btn" onclick="playCurrentLetterSound()">
@@ -468,11 +475,11 @@
 const LETTERS = ['f','g','h','i','j'];
 
 const LETTER_DATA = {
-  f: { speech:'fish',   instruction:'Find the letter that makes the sound… fuh' },
-  g: { speech:'goat',   instruction:'Find the letter that makes the sound… guh' },
-  h: { speech:'hat',    instruction:'Find the letter that makes the sound… huh' },
-  i: { speech:'igloo',  instruction:'Find the letter that makes the sound… ih'  },
-  j: { speech:'jump',   instruction:'Find the letter that makes the sound… juh' },
+  f: { emoji:'🐟', instruction:'Find the letter that makes the sound… fuh' },
+  g: { emoji:'🐐', instruction:'Find the letter that makes the sound… guh' },
+  h: { emoji:'🎩', instruction:'Find the letter that makes the sound… huh' },
+  i: { emoji:'🍦', instruction:'Find the letter that makes the sound… ih'  },
+  j: { emoji:'🃏', instruction:'Find the letter that makes the sound… juh' },
 };
 
 const TILE_PALETTE = [
@@ -519,6 +526,13 @@ function playLetterSound(letter) {
   a.play().catch(() => {});
 }
 
+function playFindLetter(letter) {
+  if (muted) { return; }
+  const intro = new Audio('Assets/find_the_letter.mp3');
+  intro.onended = () => setTimeout(() => playLetterSound(letter), 150);
+  intro.play().catch(() => playLetterSound(letter));
+}
+
 function speak(text) {
   if (muted) return;
   if (!window.speechSynthesis) return;
@@ -562,6 +576,7 @@ function loadQuestion() {
   document.getElementById('score-val').textContent = score;
   document.getElementById('prog-bar').style.width  = (curQ / LETTERS.length * 100) + '%';
   document.getElementById('instruction-txt').textContent = data.instruction;
+  document.getElementById('q-emoji').textContent = data.emoji;
 
   // Animate the big letter
   const qLetter = document.getElementById('q-letter');
@@ -572,7 +587,7 @@ function loadQuestion() {
 
   renderTiles();
 
-  setTimeout(() => playLetterSound(letter), 500);
+  setTimeout(() => playFindLetter(letter), 500);
 }
 
 function stopTimer() { clearInterval(timerTick); }

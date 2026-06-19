@@ -280,6 +280,12 @@
     }
     .letter-entrance { animation: letterBounceIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
 
+    #q-emoji {
+      font-size: clamp(3em, 12vw, 5em);
+      line-height: 1;
+      animation: letterBounceIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+    }
+
     .btn-restart {
       position: fixed; bottom: 16px; left: 50%; transform: translateX(-50%);
       background: linear-gradient(135deg, #FF9800, #F57C00);
@@ -423,6 +429,7 @@
       <div class="q-find-label">Find the sound</div>
       <div id="q-letter">q</div>
     </div>
+    <div id="q-emoji">👑</div>
 
     <button class="hear-btn" onclick="playCurrentLetterSound()">
       🔊 &nbsp;Hear the Sound
@@ -455,16 +462,16 @@
 const LETTERS = ['q','r','s','t','u','v','w','x','y','z'];
 
 const LETTER_DATA = {
-  q: { speech:'queen',    instruction:'Find the letter that makes the sound… kwuh' },
-  r: { speech:'rabbit',   instruction:'Find the letter that makes the sound… ruh'  },
-  s: { speech:'snake',    instruction:'Find the letter that makes the sound… sss'  },
-  t: { speech:'tiger',    instruction:'Find the letter that makes the sound… tuh'  },
-  u: { speech:'umbrella', instruction:'Find the letter that makes the sound… uh'   },
-  v: { speech:'violin',   instruction:'Find the letter that makes the sound… vvv'  },
-  w: { speech:'wolf',     instruction:'Find the letter that makes the sound… wuh'  },
-  x: { speech:'fox',      instruction:'Find the letter that makes the sound… ks'   },
-  y: { speech:'yak',      instruction:'Find the letter that makes the sound… yuh'  },
-  z: { speech:'zebra',    instruction:'Find the letter that makes the sound… zzz'  },
+  q: { emoji:'👑', instruction:'Find the letter that makes the sound… kwuh' },
+  r: { emoji:'🐇', instruction:'Find the letter that makes the sound… ruh'  },
+  s: { emoji:'🐍', instruction:'Find the letter that makes the sound… sss'  },
+  t: { emoji:'🐯', instruction:'Find the letter that makes the sound… tuh'  },
+  u: { emoji:'☂️', instruction:'Find the letter that makes the sound… uh'   },
+  v: { emoji:'🎻', instruction:'Find the letter that makes the sound… vvv'  },
+  w: { emoji:'🐺', instruction:'Find the letter that makes the sound… wuh'  },
+  x: { emoji:'🦊', instruction:'Find the letter that makes the sound… ks'   },
+  y: { emoji:'🪀', instruction:'Find the letter that makes the sound… yuh'  },
+  z: { emoji:'🦓', instruction:'Find the letter that makes the sound… zzz'  },
 };
 
 const TILE_PALETTE = [
@@ -516,6 +523,13 @@ function playLetterSound(letter) {
   a.play().catch(() => {});
 }
 
+function playFindLetter(letter) {
+  if (muted) { return; }
+  const intro = new Audio('Assets/find_the_letter.mp3');
+  intro.onended = () => setTimeout(() => playLetterSound(letter), 150);
+  intro.play().catch(() => playLetterSound(letter));
+}
+
 function speak(text) {
   if (muted) return;
   if (!window.speechSynthesis) return;
@@ -551,6 +565,7 @@ function loadQuestion() {
   document.getElementById('score-val').textContent = score;
   document.getElementById('prog-bar').style.width  = (curQ / LETTERS.length * 100) + '%';
   document.getElementById('instruction-txt').textContent = data.instruction;
+  document.getElementById('q-emoji').textContent = data.emoji;
 
   const qLetter = document.getElementById('q-letter');
   qLetter.textContent = letter;
@@ -559,7 +574,7 @@ function loadQuestion() {
   qLetter.classList.add('letter-entrance');
 
   renderTiles();
-  setTimeout(() => playLetterSound(letter), 500);
+  setTimeout(() => playFindLetter(letter), 500);
 }
 
 /* ════════════════════════════════════════
