@@ -528,7 +528,7 @@ function speak(text, rate=0.85, pitch=1.0) {
 }
 
 function playLetterSound(letter) {
-  speak(LETTER_DATA[letter].speech, 0.78, 1.3);
+  speak(letter);
 }
 function playCurrentLetterSound() {
   if (curQ < LETTERS.length) playLetterSound(LETTERS[curQ]);
@@ -604,6 +604,7 @@ function renderTiles() {
 ════════════════════════════════════════ */
 function handleTile(letter) {
   if (answered) return;
+  speak(letter);
   const correct = LETTERS[curQ];
   if (letter === correct) registerCorrect(letter);
   else registerWrong(false, letter);
