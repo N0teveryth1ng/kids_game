@@ -616,7 +616,6 @@ function renderTiles() {
 ════════════════════════════════════════ */
 function handleTile(letter) {
   if (answered) return;
-  playLetterSound(letter);
   const correct = LETTERS[curQ];
   if (letter === correct) registerCorrect(letter);
   else registerWrong(false, letter);
