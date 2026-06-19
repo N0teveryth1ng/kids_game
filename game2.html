@@ -545,10 +545,9 @@ function playLetterSound(letter) {
 }
 
 function playFindLetter(letter) {
-  if (muted) { return; }
-  const intro = new Audio('Assets/find_the_letter.mp3');
-  intro.onended = () => setTimeout(() => playLetterSound(letter), 150);
-  intro.play().catch(() => playLetterSound(letter));
+  if (muted) return;
+  const a = new Audio(`Assets/find_${letter}.mp3`);
+  a.play().catch(() => {});
 }
 
 function speak(text) {
@@ -629,15 +628,7 @@ function handleTile(letter) {
   const correct = LETTERS[curQ];
   const isLastCorrect = (letter === correct) && (curQ + 1 >= LETTERS.length);
   if (isLastCorrect) playClaps();
-
-  const a = letterAudio[letter];
-  if (!muted && a) {
-    a.currentTime = 0;
-    a.onended = () => { a.onended = null; processAnswer(letter); };
-    a.play().catch(() => processAnswer(letter));
-  } else {
-    processAnswer(letter);
-  }
+  processAnswer(letter);
 }
 
 function processAnswer(letter) {
@@ -654,8 +645,6 @@ function registerCorrect(letter) {
   setTileState(letter, 'correct');
   dimAllExcept(letter);
 
-  const isLast = (curQ + 1 >= LETTERS.length);
-  if (!isLast) playAudio(sndCorrect);
   showToast('⭐ Correct!', '#4CAF50');
   spawnConfetti();
 
