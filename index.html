@@ -641,7 +641,6 @@ function registerWrong(fromTimer, letter) {
     setTimeout(() => {
       const correct = LETTERS[curQ];
       document.getElementById(`tile-${correct}`).classList.add('state-hint');
-      speak('Here is a hint! Look for the glowing letter!', 0.8, 1.2);
     }, 420);
 
   } else {
@@ -660,7 +659,7 @@ function registerWrong(fromTimer, letter) {
       document.getElementById(`tile-${correct}`).classList.remove('state-hint');
       setTileState(correct, 'correct');
       dimAllExcept(correct);
-      speak('The correct letter was ' + correct, 0.8, 1.1);
+      playLetterSound(correct);
       setTimeout(() => { curQ++; loadQuestion(); }, 2500);
     }, 600);
   }
@@ -759,7 +758,6 @@ function showEnd() {
   const stars = score >= 5 ? '⭐⭐⭐' : score >= 3 ? '⭐⭐' : '⭐';
   document.getElementById('end-stars').textContent = stars;
   playAudio(sndClaps);
-  speak(`You scored ${score} out of 5. You have done a great job!`, 0.85, 1.2);
   spawnConfetti();
   setTimeout(spawnConfetti, 800);
 }
