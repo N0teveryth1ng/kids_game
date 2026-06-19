@@ -4,15 +4,18 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
   <title>Phonics · Lowercase Letters f–j · LY2</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;800&display=swap" rel="stylesheet">
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     body {
-      font-family: 'Comic Sans MS', 'Chalkboard SE', 'Arial Rounded MT Bold', cursive;
+      font-family: 'Nunito', 'Trebuchet MS', Arial, sans-serif;
       background: linear-gradient(135deg, #fce4ec 0%, #e8f5e9 50%, #e3f2fd 100%);
-      min-height: 100vh;
+      height: 100vh; height: 100dvh;
       display: flex;
-      align-items: center;
+      align-items: stretch;
       justify-content: center;
       overflow: hidden;
       user-select: none;
@@ -34,11 +37,15 @@
       cursor: pointer;
     }
     #intro-logo {
-      width: min(55vw, 260px);
+      width: min(72vw, 340px);
       height: auto;
-      filter: drop-shadow(0 6px 18px rgba(0,0,0,0.45));
+      background: white;
+      border-radius: 24px;
+      padding: 28px 36px;
+      box-shadow: 0 8px 40px rgba(0,0,0,0.35);
       animation: logoBounce 2s ease-in-out infinite;
       pointer-events: none;
+      display: block;
     }
     @keyframes logoBounce {
       0%,100% { transform: translateY(0); }
@@ -53,8 +60,9 @@
       flex-direction: column;
       width: 100%;
       max-width: 860px;
-      min-height: 100vh;
-      padding: 14px 14px 10px;
+      height: 100%;
+      padding: 14px 14px 80px;
+      overflow-y: auto;
     }
 
     /* Header */
@@ -80,9 +88,6 @@
       font-weight: bold;
       text-align: center;
     }
-    .hdr-right { display: flex; align-items: center; gap: 10px; }
-
-
     /* Mute button */
     .mute-btn {
       width: 38px; height: 38px;
@@ -95,19 +100,6 @@
       transition: border-color 0.2s;
     }
     .mute-btn:hover { border-color: #aaa; }
-
-    /* Restart button (header) */
-    .hdr-restart-btn {
-      width: 38px; height: 38px;
-      border: 2px solid #ddd;
-      border-radius: 50%;
-      background: white;
-      font-size: 1em;
-      cursor: pointer;
-      display: flex; align-items: center; justify-content: center;
-      transition: border-color 0.2s;
-    }
-    .hdr-restart-btn:hover { border-color: #aaa; }
 
     /* Progress bar */
     .progress-row {
@@ -127,7 +119,7 @@
     .progress-bar-fill {
       height: 100%;
       border-radius: 5px;
-      background: linear-gradient(90deg, #7b1fa2, #ab47bc);
+      background: linear-gradient(90deg, #4CAF50, #8BC34A);
       transition: width 0.5s ease;
     }
 
@@ -152,9 +144,9 @@
       flex-direction: column;
       align-items: center;
       gap: 18px;
-      flex: 1;
-      min-height: 260px;
-      justify-content: center;
+      flex-shrink: 0;
+      margin-top: auto;
+      margin-bottom: auto;
     }
 
     /* Letter display inside card */
@@ -287,27 +279,21 @@
     }
     .letter-entrance { animation: letterBounceIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
 
-    /* Bottom row */
-    .bottom-row {
-      display: flex;
-      justify-content: center;
-      margin-top: 14px;
-    }
     .btn-restart {
+      position: fixed; bottom: 16px; left: 50%; transform: translateX(-50%);
       background: linear-gradient(135deg, #FF9800, #F57C00);
       color: white;
       border: none;
-      padding: 12px 32px;
-      border-radius: 40px;
-      font-size: 1em;
+      border-radius: 50px;
+      padding: 14px 36px;
+      font-size: 1.05em;
       font-family: inherit;
-      font-weight: bold;
+      font-weight: 800;
       cursor: pointer;
-      box-shadow: 0 5px 14px rgba(255,152,0,0.4);
-      transition: transform 0.1s, box-shadow 0.1s;
+      box-shadow: 0 4px 16px rgba(255,152,0,0.4);
+      z-index: 50;
+      white-space: nowrap;
     }
-    .btn-restart:hover  { transform: translateY(-2px); }
-    .btn-restart:active { transform: translateY(1px); box-shadow: 0 2px 6px rgba(255,152,0,0.3); }
 
     /* ══════════════════════════════════════
        TOAST
@@ -316,7 +302,7 @@
       position: fixed;
       top: 20%;
       left: 50%;
-      transform: translateX(-50%) scale(0.7);
+      transform: translateX(-50%) scale(0);
       padding: 14px 30px;
       border-radius: 50px;
       font-size: 1.5em;
@@ -328,7 +314,7 @@
       z-index: 500;
       white-space: nowrap;
       box-shadow: 0 8px 24px rgba(0,0,0,0.2);
-      font-family: 'Comic Sans MS', 'Chalkboard SE', cursive;
+      font-family: inherit;
     }
     #toast.show {
       opacity: 1;
@@ -414,15 +400,7 @@
      INTRO SCREEN — logo only, tap to start
 ══════════════════════════════════════ -->
 <div id="intro-screen" onclick="startGame()">
-  <img id="intro-logo" src="Assets/innovinelogo.png" alt="Innovine"
-       onerror="this.style.display='none'; document.getElementById('intro-logo-fallback').style.display='flex';">
-  <div id="intro-logo-fallback" style="display:none; flex-direction:column; align-items:center; gap:10px; pointer-events:none;">
-    <div style="font-size:clamp(2.5em,10vw,5em); font-weight:bold; color:#FFD700;
-                text-shadow:0 4px 16px rgba(0,0,0,0.4); letter-spacing:2px; animation:logoBounce 2s ease-in-out infinite;">
-      🌿 Innovine
-    </div>
-    <div style="color:rgba(255,255,255,0.7); font-size:1em; letter-spacing:3px;">EDUCATIONAL GAMES</div>
-  </div>
+  <img id="intro-logo" src="innovinelogo.png" alt="Innovine">
 </div>
 
 <!-- ══════════════════════════════════════
@@ -434,10 +412,7 @@
   <div class="hdr">
     <div class="hdr-score">⭐ <span id="score-val">0</span> / 5</div>
     <div class="hdr-title">Phonics · Letters f–j</div>
-    <div class="hdr-right">
-      <button class="mute-btn" id="mute-btn" onclick="toggleMute()" title="Mute/Unmute">🔊</button>
-      <button class="hdr-restart-btn" onclick="restartGame()" title="Restart">🔄</button>
-    </div>
+    <button class="mute-btn" id="mute-btn" onclick="toggleMute()">🔊</button>
   </div>
 
   <!-- Progress bar -->
@@ -458,7 +433,6 @@
     <div class="q-letter-wrap">
       <div class="q-find-label">Find the sound</div>
       <div id="q-letter">f</div>
-      <div id="q-phoneme">/f/</div>
     </div>
 
     <!-- Hear sound button -->
@@ -471,10 +445,7 @@
 
   </div>
 
-  <!-- Bottom -->
-  <div class="bottom-row">
-    <button class="btn-restart" onclick="restartGame()">🔄 &nbsp;Restart</button>
-  </div>
+  <button class="btn-restart" onclick="restartGame()">🔄 &nbsp;Restart</button>
 
 </div>
 
@@ -497,11 +468,11 @@
 const LETTERS = ['f','g','h','i','j'];
 
 const LETTER_DATA = {
-  f: { phoneme:'/f/', speech:'The letter f. fuh — like fish!',    instruction:'Find the letter that makes the sound… fuh' },
-  g: { phoneme:'/g/', speech:'The letter g. guh — like goat!',    instruction:'Find the letter that makes the sound… guh' },
-  h: { phoneme:'/h/', speech:'The letter h. huh — like hat!',     instruction:'Find the letter that makes the sound… huh' },
-  i: { phoneme:'/ɪ/', speech:'The letter i. ih — like igloo!',    instruction:'Find the letter that makes the sound… ih'  },
-  j: { phoneme:'/dʒ/',speech:'The letter j. juh — like jump!',   instruction:'Find the letter that makes the sound… juh' },
+  f: { speech:'fish',   instruction:'Find the letter that makes the sound… fuh' },
+  g: { speech:'goat',   instruction:'Find the letter that makes the sound… guh' },
+  h: { speech:'hat',    instruction:'Find the letter that makes the sound… huh' },
+  i: { speech:'igloo',  instruction:'Find the letter that makes the sound… ih'  },
+  j: { speech:'jump',   instruction:'Find the letter that makes the sound… juh' },
 };
 
 const TILE_PALETTE = [
@@ -535,14 +506,25 @@ function playAudio(snd) {
   snd.play().catch(() => {});
 }
 
-function speak(text, rate=0.82, pitch=1.2) {
-  if (muted) { console.log(`[AUDIO MUTED: "${text}"]`); return; }
-  if (!window.speechSynthesis) { console.log(`[NO TTS: "${text}"]`); return; }
+function getVoice() {
+  const voices = window.speechSynthesis.getVoices();
+  return voices.find(v => v.lang === 'en-US' && v.name.includes('Female'))
+      || voices.find(v => v.lang === 'en-US')
+      || voices.find(v => v.lang.startsWith('en'))
+      || voices[0];
+}
+window.speechSynthesis.getVoices();
+window.speechSynthesis.addEventListener('voiceschanged', () => window.speechSynthesis.getVoices());
+
+function speak(text, rate=0.85, pitch=1.0) {
+  if (muted) return;
+  if (!window.speechSynthesis) return;
   window.speechSynthesis.cancel();
   const u = new SpeechSynthesisUtterance(text);
-  u.rate = rate; u.pitch = pitch; u.volume = 1;
+  u.lang = 'en-US'; u.rate = rate; u.pitch = pitch; u.volume = 1;
+  const v = getVoice();
+  if (v) u.voice = v;
   window.speechSynthesis.speak(u);
-  console.log(`[PLAYING SOUND: "${text}"]`);
 }
 
 function playLetterSound(letter) {
@@ -567,7 +549,6 @@ function startGame() {
   document.getElementById('intro-screen').style.display = 'none';
   document.getElementById('game-screen').style.display  = 'flex';
   curQ = 0; score = 0;
-  speak('Welcome to Phonics! Find the letters f through j!', 0.8, 1.3);
   loadQuestion();
 }
 
@@ -584,7 +565,6 @@ function loadQuestion() {
   document.getElementById('score-val').textContent = score;
   document.getElementById('prog-bar').style.width  = (curQ / LETTERS.length * 100) + '%';
   document.getElementById('instruction-txt').textContent = data.instruction;
-  document.getElementById('q-phoneme').textContent = data.phoneme;
 
   // Animate the big letter
   const qLetter = document.getElementById('q-letter');
