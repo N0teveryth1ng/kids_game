@@ -616,6 +616,17 @@ function renderTiles() {
 ════════════════════════════════════════ */
 function handleTile(letter) {
   if (answered) return;
+  const a = letterAudio[letter];
+  if (!muted && a) {
+    a.currentTime = 0;
+    a.onended = () => { a.onended = null; processAnswer(letter); };
+    a.play().catch(() => processAnswer(letter));
+  } else {
+    processAnswer(letter);
+  }
+}
+
+function processAnswer(letter) {
   const correct = LETTERS[curQ];
   if (letter === correct) registerCorrect(letter);
   else registerWrong(false, letter);
