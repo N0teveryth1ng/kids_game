@@ -605,6 +605,10 @@ function renderTiles() {
 ════════════════════════════════════════ */
 function handleTile(letter) {
   if (answered) return;
+  const correct = LETTERS[curQ];
+  const isLastCorrect = (letter === correct) && (curQ + 1 >= LETTERS.length);
+  if (isLastCorrect) playAudio(sndClaps);
+
   const a = letterAudio[letter];
   if (!muted && a) {
     a.currentTime = 0;
@@ -630,8 +634,7 @@ function registerCorrect(letter) {
   dimAllExcept(letter);
 
   const isLast = (curQ + 1 >= LETTERS.length);
-  if (isLast) playAudio(sndClaps);
-  else playAudio(sndCorrect);
+  if (!isLast) playAudio(sndCorrect);
   showToast('⭐ Correct!', '#4CAF50');
   spawnConfetti();
 
