@@ -557,6 +557,10 @@ function playWrongSfx() {
    START / LOAD
 ════════════════════════════════════════ */
 function startGame() {
+  // Unlock all audio on first user gesture (required by mobile browsers)
+  const allAudio = [sndCorrect, sndWrong, sndClaps, ...Object.values(letterAudio)];
+  allAudio.forEach(a => { a.play().then(() => { a.pause(); a.currentTime = 0; }).catch(() => {}); });
+
   document.getElementById('intro-screen').style.display = 'none';
   document.getElementById('game-screen').style.display  = 'flex';
   curQ = 0; score = 0;
